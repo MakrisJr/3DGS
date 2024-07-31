@@ -16,7 +16,7 @@ from utils.loss_utils import l1_loss, ssim
 from gaussian_renderer import render, network_gui
 import sys
 from scene import Scene, GaussianModel
-from utils.general_utils import safe_state
+from utils.general_utils import safe_state, set_seed
 import uuid
 from tqdm import tqdm
 from utils.image_utils import psnr
@@ -205,6 +205,7 @@ if __name__ == "__main__":
     parser.add_argument("--quiet", action="store_true")
     parser.add_argument("--checkpoint_iterations", nargs="+", type=int, default=[])
     parser.add_argument("--start_checkpoint", type=str, default = None)
+    parser.add_argument("--seed", type=int, default=None)
     args = parser.parse_args(sys.argv[1:])
     args.save_iterations.append(args.iterations)
     
@@ -212,6 +213,13 @@ if __name__ == "__main__":
 
     # Initialize system state (RNG)
     safe_state(args.quiet)
+
+    # Set up random seeds
+    if args.seed is not None:
+        set_seed(args.seed)
+        print(f"Using seed: {args.seed}")
+    else:
+        print("Using default seed 0")
 
     # Start GUI server, configure and run training
     network_gui.init(args.ip, args.port)
